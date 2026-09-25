@@ -1,3 +1,4 @@
+import { fetchFeed } from "./lib/rss/index.js";
 import { readConfig, setUser } from "./config.js";
 import { createUser, getUserByName, deleteAllUsers, getUsers } from "./lib/db/queries/users.js";
 
@@ -82,4 +83,10 @@ export async function handlerUsers(cmdName: string, ...args: string[]) {
       console.log(`* ${user.name}`);
     }
   }
+}
+
+export async function handlerAgg(cmdName: string, ...args: string[]) {
+  const feedURL = "https://www.wagslane.dev/index.xml";
+  const feed = await fetchFeed(feedURL);
+  console.log(JSON.stringify(feed, null, 2));
 }
