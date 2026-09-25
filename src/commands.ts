@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "./config.js";
-import { createUser, getUserByName } from "./lib/db/queries/users.js";
+import { createUser, getUserByName, deleteAllUsers } from "./lib/db/queries/users.js";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -60,4 +60,13 @@ export async function runCommand(
     throw new Error(`Unknown command: ${cmdName}`);
   }
   await handler(cmdName, ...args);
+}
+
+export async function handlerReset(cmdName: string, ...args: string[]) {
+  try {
+    await deleteAllUsers();
+    console.log("Database reset successfully");
+  } catch (err) {
+    throw new Error(`Failed to reset database: ${err}`);
+  }
 }
