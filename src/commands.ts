@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "./config.js";
-import { createUser, getUserByName, deleteAllUsers } from "./lib/db/queries/users.js";
+import { createUser, getUserByName, deleteAllUsers, getUsers } from "./lib/db/queries/users.js";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -68,5 +68,18 @@ export async function handlerReset(cmdName: string, ...args: string[]) {
     console.log("Database reset successfully");
   } catch (err) {
     throw new Error(`Failed to reset database: ${err}`);
+  }
+}
+
+export async function handlerUsers(cmdName: string, ...args: string[]) {
+  const allUsers = await getUsers();
+  const cfg = readConfig();
+
+  for (const user of allUsers) {
+    if (user.name === cfg.currentUserName) {
+      console.log(`* ${user.name} (current)`);
+    } else {
+      console.log(`* ${user.name}`);
+    }
   }
 }
