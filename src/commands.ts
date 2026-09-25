@@ -1,6 +1,6 @@
 import { fetchFeed } from "./lib/rss/index.js";
 import { readConfig, setUser } from "./config.js";
-import { createFeed } from "./lib/db/queries/feeds.js";
+import { createFeed, getFeeds } from "./lib/db/queries/feeds.js";
 import { User, Feed } from "./lib/db/schema.js";
 import { createUser, getUserByName, deleteAllUsers, getUsers } from "./lib/db/queries/users.js";
 
@@ -123,4 +123,15 @@ export async function handlerAddFeed(cmdName: string, ...args: string[]) {
 
   console.log("Feed created successfully:");
   printFeed(feed, user);
+}
+
+export async function handlerFeeds(cmdName: string, ...args: string[]) {
+  const feeds = await getFeeds();
+
+  for (const feed of feeds) {
+    console.log(`* Name: ${feed.name}`);
+    console.log(`* URL:  ${feed.url}`);
+    console.log(`* User: ${feed.userName}`);
+    console.log("---");
+  }
 }
