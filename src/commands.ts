@@ -2,6 +2,7 @@ import { scrapeFeeds, parseDuration } from "./lib/aggregator.js";
 import { readConfig, setUser } from "./config.js";
 import { createFeed, getFeeds, getFeedByUrl } from "./lib/db/queries/feeds.js";
 import { createFeedFollow, getFeedFollowsForUser, deleteFeedFollow } from "./lib/db/queries/feed_follows.js";
+import { getPostsForUser } from "./lib/db/queries/posts.js";
 import { User, Feed } from "./lib/db/schema.js";
 import { createUser, getUserByName, deleteAllUsers, getUsers } from "./lib/db/queries/users.js";
 
@@ -215,4 +216,25 @@ export async function handlerAgg(cmdName: string, ...args: string[]) {
       resolve();
     });
   });
+}
+
+export async function handlerBrowse(cmdName: string, user: User, ...args: string[]) {
+  let limit = 2;
+  if (args.length > 0) {
+    const parsed = parseInt(args[0], 10);
+    if (!isNaN(parsed)) {
+      limit = parsed;
+    }
+  }
+
+  const userPosts = await getPostsForUser(user.id, limit);
+
+  for (const post of userPosts) {
+    console.log(`* ${post.title}`);
+    console.log(`  ${post.url}`);
+    if (post.publishedAt) {
+      console.log(`  Published: ${post.publishedAt}`);
+    }
+    console.log("---");
+  }
 }

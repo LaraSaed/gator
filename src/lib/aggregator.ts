@@ -1,5 +1,14 @@
 import { fetchFeed } from "./rss/index.js";
 import { getNextFeedToFetch, markFeedFetched } from "./db/queries/feeds.js";
+import { createPost } from "./db/queries/posts.js";
+
+function parsePubDate(pubDate: string): Date | null {
+  const date = new Date(pubDate);
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+  return date;
+}
 
 export async function scrapeFeeds() {
   const feed = await getNextFeedToFetch();
@@ -15,8 +24,17 @@ export async function scrapeFeeds() {
   const rssFeed = await fetchFeed(feed.url);
 
   for (const item of rssFeed.channel.item) {
-    console.log(`* ${item.title}`);
+    const publishedAt = parsePubDate(item.pubDate);
+    await createPost(
+      item.title,
+      item.link,
+      item.description ?? null,
+      publishedAt,
+      feed.id
+    );
   }
+
+  console.log(`Saved ${rssFeed.channel.item.length} posts from ${feed.name}`);
 }
 
 export function parseDuration(durationStr: string): number {

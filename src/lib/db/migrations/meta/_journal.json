@@ -29,6 +29,13 @@
       "when": 1790415493176,
       "tag": "0003_friendly_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790416277475,
+      "tag": "0004_sleepy_mikhail_rasputin",
+      "breakpoints": true
     }
   ]
 }
