@@ -8,6 +8,7 @@ import {
   handlerLogin,
   handlerRegister,
   handlerReset,
+  handlerUnfollow,
   handlerUsers,
   middlewareLoggedIn,
   registerCommand,
@@ -25,6 +26,7 @@ async function main() {
   registerCommand(registry, "feeds", handlerFeeds);
   registerCommand(registry, "follow", middlewareLoggedIn(handlerFollow));
   registerCommand(registry, "following", middlewareLoggedIn(handlerFollowing));
+  registerCommand(registry, "unfollow", middlewareLoggedIn(handlerUnfollow));
 
   const args = process.argv.slice(2);
 

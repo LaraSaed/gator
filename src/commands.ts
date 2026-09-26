@@ -1,7 +1,7 @@
 import { fetchFeed } from "./lib/rss/index.js";
 import { readConfig, setUser } from "./config.js";
 import { createFeed, getFeeds, getFeedByUrl } from "./lib/db/queries/feeds.js";
-import { createFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/feed_follows.js";
+import { createFeedFollow, getFeedFollowsForUser, deleteFeedFollow } from "./lib/db/queries/feed_follows.js";
 import { User, Feed } from "./lib/db/schema.js";
 import { createUser, getUserByName, deleteAllUsers, getUsers } from "./lib/db/queries/users.js";
 
@@ -174,4 +174,20 @@ export async function handlerFollowing(cmdName: string, user: User, ...args: str
   for (const ff of feedFollows) {
     console.log(`* ${ff.feedName}`);
   }
+}
+
+export async function handlerUnfollow(cmdName: string, user: User, ...args: string[]) {
+  if (args.length < 1) {
+    throw new Error(`Usage: ${cmdName} <url>`);
+  }
+  const url = args[0];
+
+  const feed = await getFeedByUrl(url);
+  if (!feed) {
+    throw new Error(`Feed with URL ${url} does not exist`);
+  }
+
+  await deleteFeedFollow(user.id, feed.id);
+
+  console.log(`${user.name} has unfollowed ${feed.name}`);
 }
